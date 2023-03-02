@@ -2,10 +2,14 @@ import Head from 'next/head'
 import Image from 'next/image'
 import { Inter } from 'next/font/google'
 import styles from '@/styles/Home.module.css'
+import { sheets } from '@/lib/google-sheets'
 
 const inter = Inter({ subsets: ['latin'] })
 
-export default function Home() {
+export default function Home(props) {
+  const { data } = props;
+  console.log(data);
+
   return (
     <>
       <Head>
@@ -120,4 +124,20 @@ export default function Home() {
       </main>
     </>
   )
+}
+
+export async function getStaticProps() {
+  let data = null
+
+  try {
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId: '13dnWUvaJSALpubO2FMXQDA-HbeEInqnCbgN9jmKjegg',
+      range: 'Sheet1!A1:C2',
+    })
+    data = response.data.values
+  } catch (error) {
+    console.error(error)
+  }
+
+  return { props: { data } }
 }
